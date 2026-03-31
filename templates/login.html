@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | NutriGen AI</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Custom Style -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body class="login-page">
+    <!-- Full-Screen Food Background -->
+    <div style="
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        z-index: -3;
+        background: url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1920&q=80') center center / cover no-repeat;
+    "></div>
+    <!-- Dark Overlay -->
+    <div style="
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        z-index: -2;
+        background: linear-gradient(135deg, rgba(5, 8, 22, 0.82) 0%, rgba(30, 27, 75, 0.78) 50%, rgba(5, 8, 22, 0.85) 100%);
+        backdrop-filter: blur(3px);
+    "></div>
+
+    <!-- Floating Particles -->
+    <div class="particles">
+        <span class="particle"></span>
+        <span class="particle"></span>
+        <span class="particle"></span>
+        <span class="particle"></span>
+        <span class="particle"></span>
+        <span class="particle"></span>
+        <span class="particle"></span>
+        <span class="particle"></span>
+        <span class="particle"></span>
+        <span class="particle"></span>
+    </div>
+
+    <div class="container auth-container">
+        <div class="glass-panel auth-card">
+            <div class="auth-header">
+                <i class="fas fa-leaf"></i>
+                <h2 class="gradient-text">Welcome Back</h2>
+                <p>Access your personal AI nutritionist</p>
+            </div>
+
+            <form onsubmit="handleLogin(event)">
+                <div class="input-label-group">
+                    <input type="email" placeholder="Email Address" required>
+                    <i class="fas fa-envelope"></i>
+                </div>
+
+                <div class="input-label-group">
+                    <input type="password" placeholder="Password" required>
+                    <i class="fas fa-lock"></i>
+                </div>
+
+                <button type="submit" class="btn-primary" style="margin-top: 1rem;">
+                    Sign In <i class="fas fa-arrow-right" style="margin-left: 8px;"></i>
+                </button>
+            </form>
+
+            <div class="auth-divider">
+                <span>OR CONTINUE WITH</span>
+            </div>
+
+            <div class="social-login">
+                <button class="social-btn" title="Google"><i class="fab fa-google"></i></button>
+                <button class="social-btn" title="Apple"><i class="fab fa-apple"></i></button>
+                <button class="social-btn" title="Github"><i class="fab fa-github"></i></button>
+            </div>
+
+            <p style="margin-top: 2rem; color: var(--text-secondary); font-size: 0.9rem;">
+                Don't have an account? <a href="/signup"
+                    style="color: var(--primary-color); text-decoration: none; font-weight: 600; transition: all 0.3s; border-bottom: 2px solid transparent;"
+                    onmouseover="this.style.borderBottomColor='var(--primary-color)'"
+                    onmouseout="this.style.borderBottomColor='transparent'">Sign Up</a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        async function handleLogin(e) {
+            e.preventDefault();
+            const btn = document.querySelector('.btn-primary');
+            const email = document.querySelector('input[type="email"]').value;
+            const password = document.querySelector('input[type="password"]').value;
+
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Authenticating...';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    btn.innerHTML = '<i class="fas fa-check"></i> Success!';
+                    btn.style.background = '#10b981';
+                    setTimeout(() => window.location.href = "/dashboard", 500);
+                } else {
+                    throw new Error(data.error);
+                }
+            } catch (error) {
+                alert(error.message);
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+
+</html>

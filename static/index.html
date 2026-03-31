@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Healthy Recipe Dashboard</title>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h3>NutriGen AI</h3>
+      <button class="close-btn d-md-none" onclick="toggleSidebar()"><i class="fas fa-times"></i></button>
+    </div>
+    <ul class="sidebar-menu">
+      <li onclick="switchView('dashboardView')" class="active"><a href="#"><i class="fas fa-th-large"></i> Dashboard</a>
+      </li>
+      <li onclick="switchView('recipeView')"><a href="#"><i class="fas fa-search"></i> Generate Recipe</a></li>
+      <li onclick="switchView('planView')"><a href="#"><i class="fas fa-calendar-alt"></i> Weekly Plan</a></li>
+      <li onclick="switchView('ingredientsView')"><a href="#"><i class="fas fa-carrot"></i> My Ingredients</a></li>
+      <li onclick="switchView('historyView')"><a href="#"><i class="fas fa-history"></i> Login History</a></li>
+      <li onclick="logout()"><a href="/logout"><i class="fas fa-sign-out-alt"></i> Sign Out</a></li>
+    </ul>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="main-content" style="margin-left: 0; transition: margin 0.3s; padding: 20px; width: 100%;">
+
+    <!-- DASHBOARD HEADER (Global for Mobile Toggle) -->
+    <div class="d-flex justify-content-between align-items-center mb-4 d-md-none">
+      <button class="btn btn-outline-light" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+      <span class="h5 m-0">NutriGen AI</span>
+    </div>
+
+    <!-- VIEW: DASHBOARD (New Default) -->
+    <div id="dashboardView" class="view-section">
+      <div class="text-center mb-5">
+        <h1 id="greetingMessage" class="display-4 fw-bold">Good Morning, Chef! 👨‍🍳</h1>
+        <p id="dailyQuote" class="lead text-white-50">"Let food be thy medicine and medicine be thy food."</p>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="row g-4 mb-5">
+        <div class="col-md-6">
+          <div class="glass-panel text-center h-100 d-flex flex-column justify-content-center">
+            <i class="fas fa-clock fa-3x mb-3 text-primary"></i>
+            <h5 class="text-white-50">Total App Usage</h5>
+            <h2 id="totalUsageTime" class="fw-bold">0m</h2>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="glass-panel text-center h-100 d-flex flex-column justify-content-center">
+            <i class="fas fa-bullseye fa-3x mb-3 text-success"></i>
+            <h5 class="text-white-50">System Accuracy</h5>
+            <h2 id="systemAccuracy" class="fw-bold">98%</h2>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="glass-panel text-center" onclick="switchView('recipeView')"
+            style="cursor: pointer; background: rgba(255, 255, 255, 0.05);">
+            <h4>🍲 New Recipe</h4>
+            <p class="small text-white-50">Generate a single meal</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="glass-panel text-center" onclick="switchView('planView')"
+            style="cursor: pointer; background: rgba(255, 255, 255, 0.05);">
+            <h4>📅 Weekly Plan</h4>
+            <p class="small text-white-50">Get a full 7-day schedule</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="glass-panel text-center" onclick="switchView('ingredientsView')"
+            style="cursor: pointer; background: rgba(255, 255, 255, 0.05);">
+            <h4>🥕 Fridge Mode</h4>
+            <p class="small text-white-50">Cook with what you have</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEW: RECIPE GENERATOR -->
+    <div id="recipeView" class="view-section" style="display: none;">
+      <h2 class="mb-4"><i class="fas fa-utensils"></i> Generate Recipe</h2>
+      <div class="glass-panel mb-4">
+        <div class="row g-3">
+          <!-- Expanded Form -->
+          <div class="col-md-6">
+            <label class="form-label text-white-50">Main Ingredient</label>
+            <input id="ingredient" class="form-control" placeholder="e.g. Chicken, Tofu, Eggs">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label text-white-50">Food Type</label>
+            <select id="foodType" class="form-control">
+              <option value="Standard">Any</option>
+              <option value="Vegetarian">Vegetarian</option>
+              <option value="Non-Vegetarian">Non-Vegetarian</option>
+              <option value="Vegan">Vegan</option>
+            </select>
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label text-white-50">Age</label>
+            <input type="number" id="userAge" class="form-control" placeholder="30" value="30">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label text-white-50">Gender</label>
+            <select id="userGender" class="form-control">
+              <option value="Any">Any</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label text-white-50">Height (cm)</label>
+            <input type="number" id="userHeight" class="form-control" placeholder="170" value="170">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label text-white-50">Weight (kg)</label>
+            <input type="number" id="userWeight" class="form-control" placeholder="70" value="70">
+          </div>
+
+
+          <div class="col-md-6">
+            <label class="form-label text-white-50">Health Goal</label>
+            <select id="goal" class="form-control">
+              <option value="Healthy Living">Healthy Living</option>
+              <option value="Weight Loss">Weight Loss</option>
+              <option value="Muscle Gain">Muscle Gain</option>
+              <option value="Balanced Diet">Balanced Diet</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label text-white-50">Language</label>
+            <select id="languageSelect" class="form-control">
+              <option value="en">🇬🇧 English</option>
+              <option value="ta">🇱🇰 Tamil</option>
+              <option value="th">🔤 Thanglish</option>
+            </select>
+          </div>
+        </div>
+        <div class="text-center mt-4">
+          <button class="btn btn-primary btn-lg" onclick="generateRecipe()">✨ Generate Recipe</button>
+        </div>
+      </div>
+
+      <!-- RECIPE RESULT -->
+      <div id="resultSection">
+        <div class="glass-panel">
+          <!-- Full-width Hero Image -->
+          <div id="recipeHeroImage" class="recipe-hero-image"
+            style="position: relative; width: 100%; height: 400px; border-radius: 16px; overflow: hidden; background: rgba(255,255,255,0.05); margin-bottom: 24px;">
+            <div id="recipeHeroShimmer" class="shimmer-loading"
+              style="position: absolute; inset: 0; background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.03) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 16px;">
+            </div>
+            <img id="foodImage" src="" class="recipe-image" alt="Food Image"
+              style="width: 100%; height: 100%; object-fit: cover; border-radius: 16px; transition: opacity 0.5s ease; opacity: 0; display: none;" />
+            <span id="imageSourceBadge" class="badge bg-dark bg-opacity-75"
+              style="position: absolute; bottom: 12px; right: 12px; display: none; align-items: center; gap: 4px; font-size: 0.75rem; padding: 6px 10px; border-radius: 20px;"></span>
+          </div>
+
+          <!-- Recipe Info Row -->
+          <!-- Recipe Info -->
+          <div class="text-center mb-4">
+            <h2 id="recipeName" class="recipe-title"></h2>
+            <p id="description" class="text-white-50"></p>
+
+            <div class="recipe-meta">
+              <span class="meta-pill"><i class="fas fa-clock"></i> <span id="prepTime"></span></span>
+              <span class="meta-pill"><i class="fas fa-fire"></i> <span id="calCount"></span></span>
+            </div>
+
+            <div class="action-buttons mb-3 mt-3">
+              <button class="btn btn-secondary" onclick="copyRecipe()"><i class="fas fa-copy"></i> Copy</button>
+              <button class="btn btn-secondary" onclick="shareWhatsApp()"><i class="fab fa-whatsapp"></i>
+                Share</button>
+            </div>
+          </div>
+
+          <div class="row mt-4">
+            <div class="col-md-6">
+              <div class="glass-inner-panel">
+                <h3><i class="fas fa-list"></i> Ingredients</h3>
+                <ul id="ingredientsListDisplay" class="styled-list"></ul>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="glass-inner-panel">
+                <h3><i class="fas fa-chart-pie"></i> Nutrition</h3>
+                <canvas id="nutrientChart" style="max-height: 250px;"></canvas>
+                <div class="mt-3 text-center">
+                  <span class="badge bg-primary" id="proteinVal"></span>
+                  <span class="badge bg-info" id="carbsVal"></span>
+                  <span class="badge bg-warning text-dark" id="fatVal"></span>
+                  <span class="badge bg-success" id="fiberVal"></span>
+                  <span class="badge bg-danger" id="kcalVal"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="glass-inner-panel mt-4">
+            <h3><i class="fas fa-fire-burner"></i> Instructions</h3>
+            <div id="stepsListDisplay" class="steps-container"></div>
+          </div>
+
+          <div class="glass-inner-panel premium-tips-panel mt-4">
+            <h3><i class="fas fa-lightbulb"></i> Chef's Tips</h3>
+            <ul id="tipsListDisplay" class="styled-list"></ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW: MY INGREDIENTS (STRICT MODE) -->
+      <div id="ingredientsView" class="view-section" style="display: none;">
+        <div class="glass-panel">
+          <h2 class="mb-3"><i class="fas fa-carrot"></i> Fridge Raider Mode</h2>
+          <p class="text-white-50 mb-4">Enter exactly what you have. We won't ask you to buy anything else.</p>
+          <textarea id="myIngredientsList" class="form-control mb-3" rows="5"
+            placeholder="Eggs, Bread, Milk, Onions..."></textarea>
+          <button class="btn btn-primary" onclick="generateStrictRecipe()">🍳 Cook With What I Have</button>
+        </div>
+        <!-- REUSES DEFAULT RESULT SECTION LOGIC BUT RENDERS INTO VIEW -->
+      </div>
+
+      <!-- VIEW: WEEKLY PLAN -->
+      <div id="planView" class="view-section" style="display: none;">
+        <h2 class="mb-4"><i class="fas fa-calendar-week"></i> Weekly Meal Planner</h2>
+        <div class="glass-panel mb-4">
+          <div class="row g-3">
+            <!-- Reuse IDs same as recipe gen for simplicity or use unique ones? 
+                  The plan generator script uses specific IDs: age, gender, height, weight, activity, allergies, preference, goal.
+                  Wait, recipe view used: userAge, userHeight etc. Plan used: age, height... in script.js generatePlan()
+                  I should unify or ensure IDs match script expectations. 
+                  Let's make them unique for Plan to avoid conflicts if I switch views and value persist weirdly? No, unique is safer.
+             -->
+            <div class="col-md-4">
+              <label class="form-label text-white-50">Age</label>
+              <input type="number" id="age" class="form-control" value="30">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label text-white-50">Gender</label>
+              <select id="gender" class="form-control">
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label text-white-50">Activity Level</label>
+              <select id="activity" class="form-control">
+                <option value="Sedentary">Sedentary</option>
+                <option value="Moderate">Moderate</option>
+                <option value="Active">Active</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label text-white-50">Height (cm)</label>
+              <input type="number" id="height" class="form-control" value="170">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label text-white-50">Weight (kg)</label>
+              <input type="number" id="weight" class="form-control" value="70">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label text-white-50">Goal</label>
+              <!-- Reuse or new select? New ID to match script 'goal' implies conflict if Recipe uses 'goal'. 
+                      Script check: generatePlan uses getElementById("goal"). generateRecipe uses getElementById("goal").
+                      This means they SHARE the input if I don't change IDs. 
+                      Ideally, separate forms. 
+                      Let's use specific IDs for Plan: planGoal, planPreference.
+                  -->
+              <select id="planGoal" class="form-control">
+                <option value="Healthy Living">Healthy Living</option>
+                <option value="Weight Loss">Weight Loss</option>
+                <option value="Muscle Gain">Muscle Gain</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label text-white-50">Diet Type</label>
+              <select id="preference" class="form-control">
+                <option value="Standard">Standard</option>
+                <option value="Vegetarian">Vegetarian</option>
+                <option value="Vegan">Vegan</option>
+                <option value="Keto">Keto</option>
+                <option value="Paleo">Paleo</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label text-white-50">Allergies</label>
+              <input id="allergies" class="form-control" placeholder="None">
+            </div>
+          </div>
+          <div class="text-center mt-4">
+            <button class="btn btn-success btn-lg" onclick="generatePlan()">📅 Generate Weekly Plan</button>
+          </div>
+        </div>
+
+        <!-- Plan Results -->
+        <div id="planResultSection" style="display: none;">
+          <div id="planSummary" class="glass-panel mb-4"></div>
+          <div id="weeklyPlanContainer"></div>
+          <div id="groceryListContainer" class="glass-panel mt-4"></div>
+        </div>
+      </div>
+
+      <!-- VIEW: MY INGREDIENTS (STRICT MODE) -->
+      <div id="ingredientsView" class="view-section" style="display: none;">
+        <div class="glass-panel">
+          <h2 class="mb-3"><i class="fas fa-carrot"></i> Fridge Raider Mode</h2>
+          <p class="text-white-50 mb-4">Enter exactly what you have. We won't ask you to buy anything else.</p>
+          <textarea id="myIngredientsList" class="form-control mb-3" rows="5"
+            placeholder="Eggs, Bread, Milk, Onions..."></textarea>
+          <div class="d-flex gap-3 justify-content-center">
+            <button class="btn btn-primary" onclick="generateStrictRecipe()">🍳 Cook This Now</button>
+            <button class="btn btn-outline-light" onclick="generateStrictPlan()">📅 Plan My Week With This</button>
+          </div>
+        </div>
+        <!-- REUSES DEFAULT RESULT SECTION LOGIC BUT RENDERS INTO VIEW -->
+      </div>
+
+      <!-- VIEW: HISTORY -->
+      <div id="historyView" class="view-section" style="display: none;">
+        <h2 class="mb-4"><i class="fas fa-history"></i> Session History</h2>
+        <div class="glass-panel">
+          <div class="table-responsive">
+            <table class="table table-dark table-hover" style="background: transparent;">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Login Time</th>
+                  <th>Logout Time</th>
+                  <th>Duration</th>
+                  <th>Features Used</th>
+                </tr>
+              </thead>
+              <tbody id="fullHistoryTable">
+                <!-- Populated by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- LOADING SPINNER -->
+      <div id="loading" class="loading">
+        <div class="spinner"></div>
+        <p>Creating Culinary Magic...</p>
+      </div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/script.js"></script>
+</body>
+
+</html>

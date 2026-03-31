@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NutriGen AI | Personalized Nutrition Dashboard</title>
+    <meta name="description"
+        content="AI-powered personalized nutrition and healthy recipe generator. Track calories, plan meals, and discover healthy recipes.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Bootstrap (grid only) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom Style -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <!-- ═══════════════════════════════════════════════════════
+         SIDEBAR
+         ═══════════════════════════════════════════════════════ -->
+    <div class="app-layout">
+        <aside class="sidebar" id="sidebar">
+            <!-- Collapse Toggle -->
+            <button class="sidebar-toggle" id="sidebarToggle" title="Toggle Sidebar">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+
+            <!-- Brand -->
+            <div class="sidebar-header">
+                <div class="sidebar-logo">🥗</div>
+                <span class="sidebar-brand">NutriGen AI</span>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="sidebar-nav">
+                <div class="nav-section-label">Main Menu</div>
+                <div class="nav-item active" data-view="dashboardView" onclick="switchView('dashboardView')">
+                    <i class="fas fa-th-large"></i>
+                    <span>Dashboard</span>
+                </div>
+                <div class="nav-item" data-view="recipeView" onclick="switchView('recipeView')">
+                    <i class="fas fa-wand-magic-sparkles"></i>
+                    <span>Generate Recipe</span>
+                </div>
+                <div class="nav-item" data-view="planView" onclick="switchView('planView')">
+                    <i class="fas fa-calendar-week"></i>
+                    <span>Weekly Plan</span>
+                </div>
+                <div class="nav-item" data-view="ingredientsView" onclick="switchView('ingredientsView')">
+                    <i class="fas fa-basket-shopping"></i>
+                    <span>My Ingredients</span>
+                </div>
+                <div class="nav-item" data-view="dishSearchView" onclick="switchView('dishSearchView')">
+                    <i class="fas fa-magnifying-glass"></i>
+                    <span>Search by Dish Name</span>
+                </div>
+                <div class="nav-item" data-view="groceryView" onclick="switchView('groceryView')">
+                    <i class="fas fa-cart-shopping"></i>
+                    <span>Grocery Optimizer</span>
+                </div>
+
+                <div class="nav-section-label">Analytics</div>
+                <div class="nav-item" data-view="historyView" onclick="switchView('historyView')">
+                    <i class="fas fa-clock-rotate-left"></i>
+                    <span>Login History</span>
+                </div>
+                <div class="nav-item" data-view="referencesView" onclick="switchView('referencesView')">
+                    <i class="fas fa-book-open"></i>
+                    <span>Web References</span>
+                </div>
+            </nav>
+
+            <!-- Sidebar Footer -->
+            <div class="sidebar-footer">
+                <a class="nav-item" href="/logout" style="text-decoration: none;">
+                    <i class="fas fa-right-from-bracket"></i>
+                    <span>Sign Out</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Mobile Overlay -->
+        <div class="mobile-overlay" id="mobileOverlay" onclick="closeMobileSidebar()"></div>
+
+        <!-- ═══════════════════════════════════════════════════════
+             MAIN WRAPPER
+             ═══════════════════════════════════════════════════════ -->
+        <div class="main-wrapper">
+
+            <!-- ───────────────── TOP BAR ───────────────── -->
+            <header class="top-bar">
+                <div class="topbar-left">
+                    <button class="mobile-menu-btn" id="mobileMenuBtn" onclick="toggleMobileSidebar()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1 class="topbar-title" id="pageTitle"><i class="fas fa-th-large"></i> Dashboard</h1>
+                </div>
+
+                <div class="topbar-right">
+                    <!-- Search -->
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search recipes, meals...">
+                    </div>
+
+                    <!-- Notifications -->
+                    <div style="position: relative;" id="notifWrapper">
+                        <button class="topbar-icon-btn" id="notifBtn" onclick="toggleNotifications()">
+                            <i class="fas fa-bell"></i>
+                            <span class="notification-badge"></span>
+                        </button>
+                        <div class="notifications-dropdown" id="notifDropdown">
+                            <div class="notif-header">Notifications</div>
+                            <div class="notif-item">
+                                <div class="notif-icon green"><i class="fas fa-check"></i></div>
+                                <div>
+                                    <div class="notif-text"><strong>Meal plan ready!</strong> Your 7-day plan has been
+                                        generated.</div>
+                                    <div class="notif-time">2 min ago</div>
+                                </div>
+                            </div>
+                            <div class="notif-item">
+                                <div class="notif-icon blue"><i class="fas fa-chart-line"></i></div>
+                                <div>
+                                    <div class="notif-text"><strong>Goal tracking:</strong> You're 73% toward your
+                                        calorie goal today.</div>
+                                    <div class="notif-time">1 hour ago</div>
+                                </div>
+                            </div>
+                            <div class="notif-item">
+                                <div class="notif-icon yellow"><i class="fas fa-lightbulb"></i></div>
+                                <div>
+                                    <div class="notif-text"><strong>Tip:</strong> Try adding more fiber-rich foods to
+                                        your diet.</div>
+                                    <div class="notif-time">3 hours ago</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Theme Toggle -->
+                    <div class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
+                        <div class="theme-toggle-slider">
+                            <i class="fas fa-moon" id="themeIcon"></i>
+                        </div>
+                    </div>
+
+                    <!-- Profile -->
+                    <div class="profile-avatar" id="profileAvatar" title="Profile">
+                        U
+                    </div>
+                </div>
+            </header>
+
+            <!-- ───────────────── MAIN CONTENT ───────────────── -->
+            <main class="main-content">
+
+                <!-- ══════════════ DASHBOARD VIEW ══════════════ -->
+                <div id="dashboardView" class="view-section">
+                    <!-- Welcome -->
+                    <div class="welcome-banner">
+                        <h1 id="greetingMessage">Good Morning, Chef! 👨‍🍳</h1>
+                        <p id="dailyQuote">"Let food be thy medicine and medicine be thy food." — Hippocrates</p>
+                    </div>
+
+                    <!-- Quick Stats -->
+                    <div class="stats-row">
+                        <div class="stat-card animate-in" style="animation-delay: 0.1s;">
+                            <div class="stat-icon primary"><i class="fas fa-fire-flame-curved"></i></div>
+                            <div class="stat-label">Daily Calories</div>
+                            <div class="stat-value" id="statCalories">1,450</div>
+                            <div class="stat-change up"><i class="fas fa-arrow-up"></i> 12%</div>
+                        </div>
+                        <div class="stat-card animate-in" style="animation-delay: 0.2s;">
+                            <div class="stat-icon info"><i class="fas fa-utensils"></i></div>
+                            <div class="stat-label">Recipes Generated</div>
+                            <div class="stat-value" id="statRecipes">24</div>
+                            <div class="stat-change up"><i class="fas fa-arrow-up"></i> 8%</div>
+                        </div>
+                        <div class="stat-card animate-in" style="animation-delay: 0.3s;">
+                            <div class="stat-icon success"><i class="fas fa-bullseye"></i></div>
+                            <div class="stat-label">Goals Met</div>
+                            <div class="stat-value" id="statGoals">87%</div>
+                            <div class="stat-change up"><i class="fas fa-arrow-up"></i> 5%</div>
+                        </div>
+                        <div class="stat-card animate-in" style="animation-delay: 0.4s;">
+                            <div class="stat-icon warning"><i class="fas fa-clock"></i></div>
+                            <div class="stat-label">App Usage</div>
+                            <div class="stat-value" id="totalUsageTime">3h 24m</div>
+                        </div>
+                    </div>
+
+                    <!-- Charts Row -->
+                    <div class="charts-row">
+                        <!-- Calorie Progress -->
+                        <div class="glass-panel animate-in" style="animation-delay: 0.5s;">
+                            <div class="glass-panel-header">
+                                <div class="glass-panel-title"><i class="fas fa-chart-pie"></i> Daily Calorie Intake
+                                </div>
+                            </div>
+                            <div class="chart-container">
+                                <div class="calorie-chart-wrapper">
+                                    <canvas id="calorieChart"></canvas>
+                                    <div class="calorie-center-text">
+                                        <div class="cal-value" id="calCenterValue">1,450</div>
+                                        <div class="cal-label">of 2,000 kcal</div>
+                                    </div>
+                                </div>
+                                <div class="calorie-meta">
+                                    <div class="calorie-meta-item">
+                                        <span class="meta-dot" style="background: #6366f1;"></span>
+                                        <span class="meta-label">Consumed</span>
+                                        <span class="meta-value">1,450</span>
+                                    </div>
+                                    <div class="calorie-meta-item">
+                                        <span class="meta-dot" style="background: #1e293b;"></span>
+                                        <span class="meta-label">Remaining</span>
+                                        <span class="meta-value">550</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Macronutrient Distribution -->
+                        <div class="glass-panel animate-in" style="animation-delay: 0.6s;">
+                            <div class="glass-panel-header">
+                                <div class="glass-panel-title"><i class="fas fa-chart-bar"></i> Macronutrient
+                                    Distribution</div>
+                            </div>
+                            <div class="macro-chart-area">
+                                <canvas id="macroChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Weekly Meal Plan Preview -->
+                    <div class="glass-panel animate-in" style="animation-delay: 0.7s; margin-bottom: var(--space-xl);">
+                        <div class="glass-panel-header">
+                            <div class="glass-panel-title"><i class="fas fa-calendar-days"></i> Weekly Meal Plan Preview
+                            </div>
+                            <button class="btn-secondary" onclick="switchView('planView')"
+                                style="font-size: 0.78rem; padding: 6px 14px !important;">
+                                View Full Plan <i class="fas fa-arrow-right" style="margin-left: 4px;"></i>
+                            </button>
+                        </div>
+                        <div class="meal-plan-grid" id="mealPlanGrid">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Recent Recipes -->
+                    <div class="glass-panel animate-in" style="animation-delay: 0.8s;">
+                        <div class="glass-panel-header">
+                            <div class="glass-panel-title"><i class="fas fa-clock-rotate-left"></i> Recent Recipes</div>
+                            <button class="btn-secondary" onclick="switchView('recipeView')"
+                                style="font-size: 0.78rem; padding: 6px 14px !important;">
+                                Generate New <i class="fas fa-plus" style="margin-left: 4px;"></i>
+                            </button>
+                        </div>
+                        <div class="recipes-grid" id="recentRecipesGrid">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ══════════════ RECIPE GENERATOR VIEW ══════════════ -->
+                <div id="recipeView" class="view-section" style="display: none;">
+                    <div class="welcome-banner">
+                        <h1>✨ Generate Recipe</h1>
+                        <p>Tell us about yourself and get an AI-powered personalized recipe</p>
+                    </div>
+
+                    <!-- 📷 Image Upload Zone -->
+                    <div class="glass-panel" style="margin-bottom: var(--space-lg);">
+                        <div class="glass-panel-header">
+                            <div class="glass-panel-title"><i class="fas fa-camera"></i> Snap & Detect Ingredients</div>
+                        </div>
+                        <div id="imageDropZone" class="image-drop-zone"
+                            onclick="document.getElementById('imageFileInput').click()">
+                            <input type="file" id="imageFileInput" accept="image/*" style="display:none;"
+                                onchange="handleImageSelect(event)">
+                            <div class="drop-zone-content" id="dropZoneContent">
+                                <div class="drop-zone-icon"><i class="fas fa-cloud-arrow-up"></i></div>
+                                <p class="drop-zone-text">Drag & drop a photo of your ingredients here</p>
+                                <p class="drop-zone-hint">or click to browse • JPG, PNG, WebP • Max 10MB</p>
+                            </div>
+                            <img id="imagePreview" class="image-preview" style="display:none;" alt="Uploaded preview">
+                        </div>
+                        <div id="imageDetectionOverlay" class="detection-overlay" style="display:none;">
+                            <div class="detection-spinner"><i class="fas fa-spinner fa-spin"></i> Analyzing
+                                ingredients...</div>
+                        </div>
+                        <div id="detectedIngredientsArea" style="display:none; margin-top: var(--space-md);">
+                            <div
+                                style="display:flex; justify-content:space-between; align-items:center; margin-bottom: var(--space-sm);">
+                                <span style="color: var(--text-secondary); font-size: 0.85rem;"><i
+                                        class="fas fa-check-circle" style="color: var(--accent-success);"></i> Detected
+                                    Ingredients</span>
+                                <button class="btn-primary ripple" onclick="useDetectedIngredients()"
+                                    style="font-size: 0.78rem; padding: 5px 14px !important;">
+                                    <i class="fas fa-arrow-right"></i> Use These
+                                </button>
+                            </div>
+                            <div id="detectedChipsContainer" class="detected-chips-container"></div>
+                            <p id="sceneDescription"
+                                style="color: var(--text-tertiary); font-size: 0.8rem; margin-top: var(--space-sm); font-style: italic;">
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- 🌍 Cuisine & Dietary Filters -->
+                    <div class="glass-panel" style="margin-bottom: var(--space-lg);">
+                        <div class="glass-panel-header">
+                            <div class="glass-panel-title"><i class="fas fa-filter"></i> Cuisine & Dietary Filters</div>
+                            <button class="btn-secondary" onclick="clearAllFilters()"
+                                style="font-size: 0.72rem; padding: 3px 10px !important;">Clear</button>
+                        </div>
+                        <div style="margin-bottom: var(--space-md);">
+                            <span class="filter-section-label">🌍 Cuisine</span>
+                            <div class="filter-chips-row">
+                                <button class="filter-chip" data-filter-type="cuisine" data-filter-value="South Indian"
+                                    onclick="toggleFilter(this)">South Indian</button>
+                                <button class="filter-chip" data-filter-type="cuisine" data-filter-value="North Indian"
+                                    onclick="toggleFilter(this)">North Indian</button>
+                                <button class="filter-chip" data-filter-type="cuisine" data-filter-value="Mediterranean"
+                                    onclick="toggleFilter(this)">Mediterranean</button>
+                                <button class="filter-chip" data-filter-type="cuisine" data-filter-value="Continental"
+                                    onclick="toggleFilter(this)">Continental</button>
+                                <button class="filter-chip" data-filter-type="cuisine" data-filter-value="Asian"
+                                    onclick="toggleFilter(this)">Asian</button>
+                                <button class="filter-chip" data-filter-type="cuisine" data-filter-value="Mexican"
+                                    onclick="toggleFilter(this)">Mexican</button>
+                            </div>
+                        </div>
+                        <div>
+                            <span class="filter-section-label">🥗 Dietary</span>
+                            <div class="filter-chips-row">
+                                <button class="filter-chip" data-filter-type="dietary" data-filter-value="Keto"
+                                    onclick="toggleFilter(this)">Keto</button>
+                                <button class="filter-chip" data-filter-type="dietary" data-filter-value="Vegan"
+                                    onclick="toggleFilter(this)">Vegan</button>
+                                <button class="filter-chip" data-filter-type="dietary" data-filter-value="High Protein"
+                                    onclick="toggleFilter(this)">High Protein</button>
+                                <button class="filter-chip" data-filter-type="dietary" data-filter-value="Low Carb"
+                                    onclick="toggleFilter(this)">Low Carb</button>
+                                <button class="filter-chip" data-filter-type="dietary" data-filter-value="Gluten-Free"
+                                    onclick="toggleFilter(this)">Gluten-Free</button>
+                                <button class="filter-chip" data-filter-type="dietary" data-filter-value="Sugar-Free"
+                                    onclick="toggleFilter(this)">Sugar-Free</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel" style="margin-bottom: var(--space-xl);">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Main Ingredient</label>
+                                <div class="input-with-mic">
+                                    <input id="ingredient" class="form-control" placeholder="e.g. Chicken, Tofu, Eggs">
+                                    <button class="mic-btn" id="micBtnIngredient"
+                                        onclick="startVoiceInput('ingredient')" title="Voice input">
+                                        <i class="fas fa-microphone"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Diet Preference</label>
+                                <select id="preference" class="form-control">
+                                    <option value="Balanced">Balanced Diet</option>
+                                    <option value="Vegetarian">Vegetarian</option>
+                                    <option value="Vegan">Vegan</option>
+                                    <option value="Keto">Keto</option>
+                                    <option value="Paleo">Paleo</option>
+                                    <option value="Gluten-Free">Gluten-Free</option>
+                                    <option value="Non-Vegetarian">Non-Vegetarian</option>
+                                    <option value="High-Protein">High Protein</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="form-label">Age</label>
+                                <input type="number" id="userAge" class="form-control" placeholder="30" value="30">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Gender</label>
+                                <select id="userGender" class="form-control">
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Height (cm)</label>
+                                <input type="number" id="userHeight" class="form-control" placeholder="170" value="170">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Weight (kg)</label>
+                                <input type="number" id="userWeight" class="form-control" placeholder="70" value="70">
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label">Activity Level</label>
+                                <select id="activity" class="form-control">
+                                    <option value="Sedentary">Sedentary</option>
+                                    <option value="Lightly Active">Lightly Active</option>
+                                    <option value="Moderately Active">Moderately Active</option>
+                                    <option value="Very Active">Very Active</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Health Goal</label>
+                                <select id="goal" class="form-control">
+                                    <option value="Nutrient Dense">General Health</option>
+                                    <option value="Weight Loss">Weight Loss</option>
+                                    <option value="Muscle Gain">Muscle Gain</option>
+                                    <option value="Energy Boost">Energy Boost</option>
+                                    <option value="Better Sleep">Better Sleep</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Language</label>
+                                <select id="languageSelect" class="form-control">
+                                    <option value="en">🇺🇸 English</option>
+                                    <option value="ta">🇱🇰 Tamil (தமிழ்)</option>
+                                    <option value="th">🗣️ Thanglish</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Allergies</label>
+                                <input type="text" id="allergies" class="form-control"
+                                    placeholder="e.g. Peanuts (Optional)">
+                            </div>
+                        </div>
+
+                        <div style="display: flex; gap: 12px; justify-content: center; margin-top: var(--space-xl);">
+                            <button class="btn-primary ripple" onclick="generateRecipe()">
+                                <i class="fas fa-wand-magic-sparkles"></i> Generate Recipe
+                            </button>
+                            <button class="btn-secondary ripple" onclick="generateRecipe(true)">
+                                <i class="fas fa-star"></i> Gourmet Mode
+                            </button>
+                            <button class="btn-secondary ripple" onclick="resetForm()">
+                                <i class="fas fa-rotate-left"></i> Reset
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Recipe Result -->
+                    <div id="resultSection" class="glass-panel" style="display: none;">
+                        <!-- Recipe Hero Image -->
+                        <div class="recipe-hero-image" id="recipeHeroImage" style="display: none;">
+                            <div class="recipe-hero-shimmer" id="recipeHeroShimmer"></div>
+                            <img id="foodImage" src="" alt="Recipe Image" class="recipe-image">
+                            <div class="recipe-image-overlay">
+                                <span class="image-source-badge" id="imageSourceBadge">
+                                    <i class="fas fa-camera"></i> Photo
+                                </span>
+                            </div>
+                        </div>
+                        <h2 id="recipeName" class="recipe-title"></h2>
+
+                        <div class="recipe-meta">
+                            <span class="meta-pill"><i class="fas fa-clock"></i> <span id="prepTime">--
+                                    min</span></span>
+                            <span class="meta-pill"><i class="fas fa-fire"></i> <span id="calCount">--
+                                    kcal</span></span>
+                        </div>
+
+                        <p id="description"
+                            style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.7;"></p>
+
+                        <div class="action-buttons" style="margin-bottom: var(--space-lg);">
+                            <button class="btn-secondary ripple" onclick="copyRecipe()"><i class="fas fa-copy"></i>
+                                Copy</button>
+                            <button class="btn-secondary ripple" onclick="shareWhatsApp()"
+                                style="background: rgba(37, 211, 102, 0.15) !important; color: #25D366 !important;"><i
+                                    class="fab fa-whatsapp"></i> Share</button>
+                        </div>
+
+                        <!-- Nutrients Grid -->
+                        <div class="nutrients-grid">
+                            <div class="nutrient-card">
+                                <span class="nutrient-val" id="proteinVal">0g</span>
+                                <span class="nutrient-label">Protein</span>
+                            </div>
+                            <div class="nutrient-card">
+                                <span class="nutrient-val" id="carbsVal">0g</span>
+                                <span class="nutrient-label">Carbs</span>
+                            </div>
+                            <div class="nutrient-card">
+                                <span class="nutrient-val" id="fatVal">0g</span>
+                                <span class="nutrient-label">Fat</span>
+                            </div>
+                            <div class="nutrient-card">
+                                <span class="nutrient-val" id="fiberVal">0g</span>
+                                <span class="nutrient-label">Fiber</span>
+                            </div>
+                        </div>
+
+                        <!-- Ingredients -->
+                        <div class="glass-inner-panel" style="margin-bottom: var(--space-lg);">
+                            <h3><i class="fas fa-carrot"></i> Ingredients</h3>
+                            <ul id="ingredientsListDisplay" class="styled-list"></ul>
+                        </div>
+
+                        <!-- Instructions -->
+                        <div class="glass-inner-panel" style="margin-bottom: var(--space-lg);">
+                            <h3><i class="fas fa-list-ol"></i> Instructions</h3>
+                            <div id="stepsListDisplay" class="steps-container"></div>
+                        </div>
+
+                        <!-- Chef Tips -->
+                        <div class="glass-inner-panel premium-tips-panel">
+                            <h3><i class="fas fa-lightbulb"></i> Chef's Tips</h3>
+                            <ul id="tipsListDisplay" class="styled-list"></ul>
+                        </div>
+
+                        <!-- Chart -->
+                        <div style="height: 220px; margin-top: var(--space-lg);">
+                            <canvas id="nutrientChart"></canvas>
+                        </div>
+
+                        <!-- Grocery -->
+                        <button class="btn-primary ripple" style="margin-top: var(--space-lg); width: 100%;"
+                            onclick="copyGroceryList()">
+                            <i class="fas fa-basket-shopping"></i> Copy Grocery List
+                        </button>
+
+                        <div id="ingredientsData" style="display:none;"></div>
+                    </div>
+
+                    <!-- Loading -->
+                    <div id="loading" class="loading">
+                        <div class="spinner"></div>
+                        <p>Chef AI is cooking up something special...</p>
+                    </div>
+                </div>
+
+                <!-- ══════════════ WEEKLY PLAN VIEW ══════════════ -->
+                <div id="planView" class="view-section" style="display: none;">
+                    <div class="welcome-banner">
+                        <h1>📅 Weekly Meal Planner</h1>
+                        <p>Get a personalized 7-day meal plan based on your health profile</p>
+                    </div>
+
+                    <div class="glass-panel" style="margin-bottom: var(--space-xl);">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Age</label>
+                                <input type="number" id="age" class="form-control" value="30">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Gender</label>
+                                <select id="gender" class="form-control">
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Activity Level</label>
+                                <select id="planActivity" class="form-control">
+                                    <option value="Sedentary">Sedentary</option>
+                                    <option value="Moderate">Moderate</option>
+                                    <option value="Active">Active</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Height (cm)</label>
+                                <input type="number" id="height" class="form-control" value="170">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Weight (kg)</label>
+                                <input type="number" id="weight" class="form-control" value="70">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Goal</label>
+                                <select id="planGoal" class="form-control">
+                                    <option value="Healthy Living">Healthy Living</option>
+                                    <option value="Weight Loss">Weight Loss</option>
+                                    <option value="Muscle Gain">Muscle Gain</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Diet Type</label>
+                                <select id="planPreference" class="form-control">
+                                    <option value="Standard">Standard</option>
+                                    <option value="Vegetarian">Vegetarian</option>
+                                    <option value="Vegan">Vegan</option>
+                                    <option value="Keto">Keto</option>
+                                    <option value="Paleo">Paleo</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Allergies</label>
+                                <input id="planAllergies" class="form-control" placeholder="None">
+                            </div>
+                        </div>
+
+                        <div style="text-align: center; margin-top: var(--space-xl);">
+                            <button class="btn-primary ripple" onclick="generatePlan()"
+                                style="background: var(--gradient-success) !important; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);">
+                                <i class="fas fa-calendar-week"></i> Generate 7-Day Plan
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Plan Results -->
+                    <div id="planResultSection" style="display: none;">
+                        <div id="planSummary" class="glass-panel" style="margin-bottom: var(--space-lg);"></div>
+                        <div id="weeklyPlanContainer"></div>
+                        <div id="groceryListContainer" class="glass-panel" style="margin-top: var(--space-lg);"></div>
+                    </div>
+
+                    <!-- Loading -->
+                    <div id="planLoading" class="loading">
+                        <div class="spinner"></div>
+                        <p>Building your personalized meal plan...</p>
+                    </div>
+                </div>
+
+                <!-- ══════════════ MY INGREDIENTS VIEW ══════════════ -->
+                <div id="ingredientsView" class="view-section" style="display: none;">
+                    <div class="welcome-banner">
+                        <h1>🥕 Fridge Raider Mode</h1>
+                        <p>Enter exactly what you have — we'll create a recipe using only those ingredients</p>
+                    </div>
+
+                    <div class="glass-panel">
+                        <div class="form-group">
+                            <label><i class="fas fa-basket-shopping"></i> Your Available Ingredients</label>
+                            <textarea id="strictIngredients" class="form-control" rows="6"
+                                placeholder="e.g. Chicken breast, broccoli, soy sauce, garlic, rice..."></textarea>
+                        </div>
+                        <div style="display: flex; gap: 12px; justify-content: center; margin-top: var(--space-lg);">
+                            <button class="btn-primary ripple" onclick="generateStrictRecipe()">
+                                <i class="fas fa-utensils"></i> Cook Now
+                            </button>
+                            <button class="btn-secondary ripple" onclick="generateStrictPlan()">
+                                <i class="fas fa-calendar-week"></i> Plan My Week
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Loading -->
+                    <div id="strictLoading" class="loading" style="display: none;">
+                        <div class="spinner"></div>
+                        <p>Chef AI is cooking with your ingredients...</p>
+                    </div>
+
+                    <!-- Strict Recipe Result (inline) -->
+                    <div id="strictResultSection" class="glass-panel" style="display: none;">
+                        <!-- Recipe Hero Image -->
+                        <div class="recipe-hero-image" id="strictHeroImage" style="display: none;">
+                            <div class="recipe-hero-shimmer" id="strictHeroShimmer"></div>
+                            <img id="strictFoodImage" src="" alt="Recipe Image" class="recipe-image">
+                            <div class="recipe-image-overlay">
+                                <span class="image-source-badge" id="strictImageBadge">
+                                    <i class="fas fa-camera"></i> Photo
+                                </span>
+                            </div>
+                        </div>
+                        <h2 id="strictRecipeName" class="recipe-title"></h2>
+
+                        <div class="recipe-meta">
+                            <span class="meta-pill"><i class="fas fa-clock"></i> <span id="strictPrepTime">--
+                                    min</span></span>
+                            <span class="meta-pill"><i class="fas fa-fire"></i> <span id="strictCalCount">--
+                                    kcal</span></span>
+                        </div>
+
+                        <p id="strictDescription"
+                            style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.7;"></p>
+
+                        <div class="action-buttons" style="margin-bottom: var(--space-lg);">
+                            <button class="btn-secondary ripple" onclick="copyStrictRecipe()"><i
+                                    class="fas fa-copy"></i>
+                                Copy</button>
+                            <button class="btn-secondary ripple" onclick="shareStrictWhatsApp()"
+                                style="background: rgba(37, 211, 102, 0.15) !important; color: #25D366 !important;"><i
+                                    class="fab fa-whatsapp"></i> Share</button>
+                        </div>
+
+                        <!-- Nutrients Grid -->
+                        <div class="nutrients-grid">
+                            <div class="nutrient-card">
+                                <span class="nutrient-val" id="strictProteinVal">0g</span>
+                                <span class="nutrient-label">Protein</span>
+                            </div>
+                            <div class="nutrient-card">
+                                <span class="nutrient-val" id="strictCarbsVal">0g</span>
+                                <span class="nutrient-label">Carbs</span>
+                            </div>
+                            <div class="nutrient-card">
+                                <span class="nutrient-val" id="strictFatVal">0g</span>
+                                <span class="nutrient-label">Fat</span>
+                            </div>
+                            <div class="nutrient-card">
+                                <span class="nutrient-val" id="strictFiberVal">0g</span>
+                                <span class="nutrient-label">Fiber</span>
+                            </div>
+                        </div>
+
+                        <!-- Ingredients -->
+                        <div class="glass-inner-panel" style="margin-bottom: var(--space-lg);">
+                            <h3><i class="fas fa-carrot"></i> Ingredients</h3>
+                            <ul id="strictIngredientsListDisplay" class="styled-list"></ul>
+                        </div>
+
+                        <!-- Instructions -->
+                        <div class="glass-inner-panel" style="margin-bottom: var(--space-lg);">
+                            <h3><i class="fas fa-list-ol"></i> Instructions</h3>
+                            <div id="strictStepsListDisplay" class="steps-container"></div>
+                        </div>
+
+                        <!-- Chef Tips -->
+                        <div class="glass-inner-panel premium-tips-panel">
+                            <h3><i class="fas fa-lightbulb"></i> Chef's Tips</h3>
+                            <ul id="strictTipsListDisplay" class="styled-list"></ul>
+                        </div>
+
+                        <!-- Chart -->
+                        <div style="height: 220px; margin-top: var(--space-lg);">
+                            <canvas id="strictNutrientChart"></canvas>
+                        </div>
+
+                        <!-- Grocery -->
+                        <button class="btn-primary ripple" style="margin-top: var(--space-lg); width: 100%;"
+                            onclick="copyStrictGroceryList()">
+                            <i class="fas fa-basket-shopping"></i> Copy Grocery List
+                        </button>
+
+                        <div id="strictIngredientsData" style="display:none;"></div>
+                    </div>
+                </div>
+
+                <!-- ══════════════ SEARCH BY DISH NAME VIEW ══════════════ -->
+                <div id="dishSearchView" class="view-section" style="display: none;">
+                    <div class="welcome-banner">
+                        <h1>🔍 Search by Dish Name</h1>
+                        <p>Enter any dish name and get a complete AI-generated recipe instantly</p>
+                    </div>
+
+                    <!-- Search Form -->
+                    <div class="glass-panel dish-search-panel">
+                        <div class="dish-search-header">
+                            <i class="fas fa-utensils dish-search-icon"></i>
+                            <h3>What would you like to cook?</h3>
+                            <p>Works with any cuisine — desserts, snacks, fast food, international dishes, and more</p>
+                        </div>
+
+                        <div class="dish-search-input-group">
+                            <div class="dish-search-input-wrapper">
+                                <i class="fas fa-search"></i>
+                                <input type="text" id="dishNameInput" class="form-control dish-search-input"
+                                    placeholder="Enter any dish name (e.g., Chocolate Cake)"
+                                    onkeydown="if(event.key==='Enter') generateDishRecipe()">
+                            </div>
+                            <button class="btn-primary ripple dish-search-btn" onclick="generateDishRecipe()">
+                                <i class="fas fa-wand-magic-sparkles"></i> Generate Recipe
+                            </button>
+                        </div>
+
+                        <!-- Popular Dishes -->
+                        <div class="dish-suggestions">
+                            <span class="dish-suggestions-label">Try:</span>
+                            <button class="dish-chip" onclick="setDishName('Pizza Margherita')">🍕 Pizza</button>
+                            <button class="dish-chip" onclick="setDishName('Chocolate Cake')">🍰 Chocolate Cake</button>
+                            <button class="dish-chip" onclick="setDishName('Butter Chicken')">🍛 Butter Chicken</button>
+                            <button class="dish-chip" onclick="setDishName('Sushi Roll')">🍣 Sushi</button>
+                            <button class="dish-chip" onclick="setDishName('French Fries')">🍟 French Fries</button>
+                            <button class="dish-chip" onclick="setDishName('Tiramisu')">🍮 Tiramisu</button>
+                            <button class="dish-chip" onclick="setDishName('Tacos')">🌮 Tacos</button>
+                            <button class="dish-chip" onclick="setDishName('Ice Cream')">🍦 Ice Cream</button>
+                        </div>
+                    </div>
+
+                    <!-- Loading -->
+                    <div id="dishLoading" class="loading" style="display: none;">
+                        <div class="spinner"></div>
+                        <p>🍽️ Generating your recipe...</p>
+                    </div>
+
+                    <!-- Dish Result Card -->
+                    <div id="dishResultSection" class="glass-panel" style="display: none;">
+                        <!-- Hero Image -->
+                        <div class="recipe-hero-image" id="dishHeroImage" style="display: none;">
+                            <div class="recipe-hero-shimmer" id="dishHeroShimmer"></div>
+                            <img id="dishFoodImage" src="" alt="Dish Image" class="recipe-image">
+                            <div class="recipe-image-overlay">
+                                <span class="image-source-badge" id="dishImageBadge">
+                                    <i class="fas fa-camera"></i> Photo
+                                </span>
+                            </div>
+                        </div>
+
+                        <h2 id="dishRecipeName" class="recipe-title"></h2>
+
+                        <div class="recipe-meta">
+                            <span class="meta-pill"><i class="fas fa-clock"></i> <span id="dishPrepTime">--
+                                    min</span></span>
+                            <span class="meta-pill"><i class="fas fa-fire"></i> <span id="dishCalCount">--
+                                    kcal</span></span>
+                            <span class="meta-pill dish-category-pill"><i class="fas fa-tag"></i> <span
+                                    id="dishCategory">--</span></span>
+                            <span class="meta-pill dish-cuisine-pill"><i class="fas fa-globe"></i> <span
+                                    id="dishCuisine">--</span></span>
+                        </div>
+
+                        <p id="dishDescription" class="recipe-description"
+                            style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: var(--space-lg);">
+                        </p>
+
+                        <!-- Nutrition Grid -->
+                        <div class="nutrients-grid">
+                            <div class="nutrient-card">
+                                <span class="nutrient-val" id="dishProteinVal">0g</span>
+                                <span class="nutrient-label">Protein</span>
+                            </div>
+                            <div class="nutrient-card">
+                                <span class="nutrient-val" id="dishCarbsVal">0g</span>
+                                <span class="nutrient-label">Carbs</span>
+                            </div>
+                            <div class="nutrient-card">
+                                <span class="nutrient-val" id="dishFatVal">0g</span>
+                                <span class="nutrient-label">Fat</span>
+                            </div>
+                            <div class="nutrient-card">
+                                <span class="nutrient-val" id="dishFiberVal">0g</span>
+                                <span class="nutrient-label">Fiber</span>
+                            </div>
+                        </div>
+
+                        <!-- Chart -->
+                        <div class="glass-panel" style="margin-bottom: var(--space-lg);">
+                            <h3 style="font-family: 'Outfit', sans-serif; margin-bottom: var(--space-md);">
+                                <i class="fas fa-chart-pie" style="color: var(--accent-primary);"></i> Nutrition
+                                Breakdown
+                            </h3>
+                            <div style="max-width: 280px; margin: 0 auto;">
+                                <canvas id="dishNutrientChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Ingredients -->
+                        <div class="glass-panel" style="margin-bottom: var(--space-lg);">
+                            <h3 style="font-family: 'Outfit', sans-serif; margin-bottom: var(--space-md);">
+                                <i class="fas fa-list-check" style="color: var(--accent-success);"></i> Ingredients
+                            </h3>
+                            <ul id="dishIngredientsList" class="styled-list"></ul>
+                        </div>
+
+                        <!-- Instructions -->
+                        <div class="glass-panel" style="margin-bottom: var(--space-lg);">
+                            <h3 style="font-family: 'Outfit', sans-serif; margin-bottom: var(--space-md);">
+                                <i class="fas fa-shoe-prints" style="color: var(--accent-primary-light);"></i>
+                                Step-by-Step Instructions
+                            </h3>
+                            <div id="dishStepsList" class="steps-container"></div>
+                        </div>
+
+                        <!-- Tips -->
+                        <div class="glass-panel premium-tips-panel" style="margin-bottom: var(--space-lg);">
+                            <h3 style="font-family: 'Outfit', sans-serif; margin-bottom: var(--space-md);">
+                                <i class="fas fa-lightbulb" style="color: var(--accent-warning);"></i> Chef's Tips
+                            </h3>
+                            <ul id="dishTipsList" class="styled-list"></ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ══════════════ GROCERY OPTIMIZER VIEW ══════════════ -->
+                <div id="groceryView" class="view-section" style="display: none;">
+                    <div class="welcome-banner">
+                        <h1>🛒 Smart Grocery Optimizer</h1>
+                        <p>Consolidated, cost-estimated grocery list from your meal plans</p>
+                    </div>
+
+                    <!-- Budget Tracker -->
+                    <div class="glass-panel" style="margin-bottom: var(--space-lg);">
+                        <div class="glass-panel-header">
+                            <div class="glass-panel-title"><i class="fas fa-wallet"></i> Weekly Budget</div>
+                            <button class="btn-secondary" onclick="clearBudget()"
+                                style="font-size: 0.75rem; padding: 4px 10px !important;">Clear</button>
+                        </div>
+                        <div class="row g-3 align-items-end">
+                            <div class="col-md-4">
+                                <label class="form-label">Budget Amount (₹)</label>
+                                <input type="number" id="budgetAmount" class="form-control" placeholder="e.g. 2000"
+                                    value="2000">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Currency</label>
+                                <select id="budgetCurrency" class="form-control">
+                                    <option value="INR">₹ INR</option>
+                                    <option value="USD">$ USD</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <button class="btn-primary ripple" onclick="setBudget()" style="width:100%;">
+                                    <i class="fas fa-check"></i> Set Budget
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Budget Progress Bar -->
+                        <div id="budgetProgressArea" style="margin-top: var(--space-md); display: none;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                                <span id="budgetSpentLabel" style="color: var(--text-secondary); font-size: 0.85rem;">₹0
+                                    spent</span>
+                                <span id="budgetTotalLabel" style="color: var(--text-secondary); font-size: 0.85rem;">of
+                                    ₹2000</span>
+                            </div>
+                            <div class="budget-bar-track">
+                                <div class="budget-bar-fill" id="budgetBarFill" style="width: 0%;"></div>
+                            </div>
+                            <div id="budgetStatusMsg"
+                                style="color: var(--text-tertiary); font-size: 0.8rem; margin-top: 6px;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Pantry Manager -->
+                    <div class="glass-panel" style="margin-bottom: var(--space-lg);">
+                        <div class="glass-panel-header">
+                            <div class="glass-panel-title"><i class="fas fa-kitchen-set"></i> My Pantry</div>
+                            <button class="btn-secondary" onclick="clearPantry()"
+                                style="font-size: 0.75rem; padding: 4px 10px !important;">Clear All</button>
+                        </div>
+                        <p style="color: var(--text-tertiary); font-size: 0.85rem; margin-bottom: var(--space-md);">Add
+                            items you already have — they'll be deducted from your grocery list.</p>
+                        <div class="row g-2 align-items-end">
+                            <div class="col-md-4">
+                                <input type="text" id="pantryItemName" class="form-control"
+                                    placeholder="Ingredient name">
+                            </div>
+                            <div class="col-md-2">
+                                <input type="number" id="pantryItemQty" class="form-control" placeholder="Qty"
+                                    value="1">
+                            </div>
+                            <div class="col-md-3">
+                                <select id="pantryItemUnit" class="form-control">
+                                    <option value="piece">Piece</option>
+                                    <option value="g">Grams</option>
+                                    <option value="kg">Kg</option>
+                                    <option value="ml">ml</option>
+                                    <option value="l">Litre</option>
+                                    <option value="cup">Cup</option>
+                                    <option value="tbsp">Tbsp</option>
+                                    <option value="tsp">Tsp</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <button class="btn-primary ripple" onclick="addPantryItem()" style="width:100%;">
+                                    <i class="fas fa-plus"></i> Add
+                                </button>
+                            </div>
+                        </div>
+                        <div id="pantryList" class="pantry-items-grid" style="margin-top: var(--space-md);"></div>
+                    </div>
+
+                    <!-- Optimized Grocery List Output -->
+                    <div id="optimizedGrocerySection" class="glass-panel" style="display: none;">
+                        <div class="glass-panel-header">
+                            <div class="glass-panel-title"><i class="fas fa-list-check"></i> Optimized Grocery List
+                            </div>
+                            <div style="display:flex; gap:8px;">
+                                <button class="btn-secondary" onclick="copyOptimizedList()"
+                                    style="font-size: 0.75rem; padding: 4px 10px !important;"><i
+                                        class="fas fa-copy"></i> Copy</button>
+                                <button class="btn-secondary" onclick="shareOptimizedList()"
+                                    style="font-size: 0.75rem; padding: 4px 10px !important; background: rgba(37,211,102,0.15) !important; color:#25D366 !important;"><i
+                                        class="fab fa-whatsapp"></i></button>
+                            </div>
+                        </div>
+                        <!-- Cost Summary -->
+                        <div id="groceryCostSummary" class="grocery-cost-summary"></div>
+                        <!-- Categories -->
+                        <div id="groceryCategoriesContainer"></div>
+                        <!-- Deductions Log -->
+                        <div id="pantryDeductionsLog" style="display: none; margin-top: var(--space-md);">
+                            <h4 style="color: var(--accent-primary); font-size: 0.9rem;"><i
+                                    class="fas fa-minus-circle"></i> Pantry Deductions</h4>
+                            <div id="deductionsList"></div>
+                        </div>
+                        <!-- Savings Suggestions -->
+                        <div id="savingsSuggestions" style="display: none; margin-top: var(--space-md);"></div>
+                    </div>
+
+                    <!-- Placeholder when no list -->
+                    <div id="groceryEmptyState" class="glass-panel" style="text-align: center; padding: 60px 20px;">
+                        <div style="font-size: 3rem; margin-bottom: var(--space-md);">🛒</div>
+                        <h3 style="color: var(--text-secondary);">No Grocery List Yet</h3>
+                        <p style="color: var(--text-tertiary); max-width: 400px; margin: 0 auto;">Generate a Weekly Meal
+                            Plan first, and your optimized grocery list will appear here automatically.</p>
+                        <button class="btn-primary ripple" onclick="switchView('planView')"
+                            style="margin-top: var(--space-lg);">
+                            <i class="fas fa-calendar-week"></i> Go to Weekly Planner
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ══════════════ HISTORY VIEW ══════════════ -->
+                <div id="historyView" class="view-section" style="display: none;">
+                    <div class="welcome-banner">
+                        <h1>📊 Session History</h1>
+                        <p>Track your activity and login sessions</p>
+                    </div>
+
+                    <div class="glass-panel">
+                        <div class="table-responsive">
+                            <table class="table table-dark table-hover" style="background: transparent;">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Login Time</th>
+                                        <th>Logout Time</th>
+                                        <th>Duration</th>
+                                        <th>Features Used</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="historyTableBody">
+                                    <tr>
+                                        <td colspan="5"
+                                            style="text-align: center; padding: 40px !important; color: var(--text-tertiary);">
+                                            Loading history...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ══════════════ WEB REFERENCES VIEW ══════════════ -->
+                <div id="referencesView" class="view-section" style="display: none;">
+                    <div class="welcome-banner">
+                        <h1>📚 Web References</h1>
+                        <p>Technologies, frameworks, and documentation used in this project</p>
+                    </div>
+
+                    <div class="glass-panel" style="margin-bottom: var(--space-xl);">
+                        <div class="glass-panel-header">
+                            <div class="glass-panel-title"><i class="fas fa-globe"></i> Technology References</div>
+                        </div>
+
+                        <div class="references-list">
+                            <!-- Reference 1 -->
+                            <div class="reference-card animate-in" style="animation-delay: 0.1s;">
+                                <div class="reference-number">1</div>
+                                <div class="reference-content">
+                                    <div class="reference-title">
+                                        <i class="fab fa-google" style="color: #4285F4;"></i>
+                                        Google (2024). Firebase Authentication Documentation.
+                                    </div>
+                                    <p class="reference-description">Firebase Auth provides backend services,
+                                        easy-to-use SDKs, and ready-made UI libraries to authenticate users. Supports
+                                        email/password, phone auth, Google, Facebook, Twitter, and more.</p>
+                                    <a href="https://firebase.google.com/docs/auth" target="_blank"
+                                        rel="noopener noreferrer" class="reference-link">
+                                        <i class="fas fa-external-link-alt"></i> https://firebase.google.com/docs/auth
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- Reference 2 -->
+                            <div class="reference-card animate-in" style="animation-delay: 0.2s;">
+                                <div class="reference-number">2</div>
+                                <div class="reference-content">
+                                    <div class="reference-title">
+                                        <i class="fab fa-google" style="color: #4285F4;"></i>
+                                        Google Cloud (2024). Cloud Run Documentation – Fully Managed Serverless
+                                        Platform.
+                                    </div>
+                                    <p class="reference-description">Cloud Run is a managed compute platform that lets
+                                        you run containers directly on top of Google's scalable infrastructure. Build
+                                        and deploy in any language with full serverless support.</p>
+                                    <a href="https://cloud.google.com/run/docs" target="_blank"
+                                        rel="noopener noreferrer" class="reference-link">
+                                        <i class="fas fa-external-link-alt"></i> https://cloud.google.com/run/docs
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- Reference 3 -->
+                            <div class="reference-card animate-in" style="animation-delay: 0.3s;">
+                                <div class="reference-number">3</div>
+                                <div class="reference-content">
+                                    <div class="reference-title">
+                                        <i class="fab fa-react" style="color: #61DAFB;"></i>
+                                        Meta Open Source (2024). React – A JavaScript Library for Building User
+                                        Interfaces.
+                                    </div>
+                                    <p class="reference-description">React is a free and open-source front-end
+                                        JavaScript library for building user interfaces based on components. It is
+                                        maintained by Meta and a community of individual developers and companies.</p>
+                                    <a href="https://react.dev/" target="_blank" rel="noopener noreferrer"
+                                        class="reference-link">
+                                        <i class="fas fa-external-link-alt"></i> https://react.dev/
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- Reference 4 -->
+                            <div class="reference-card animate-in" style="animation-delay: 0.4s;">
+                                <div class="reference-number">4</div>
+                                <div class="reference-content">
+                                    <div class="reference-title">
+                                        <i class="fab fa-python" style="color: #3776AB;"></i>
+                                        Python Software Foundation (2023). Python 3.11 Official Documentation.
+                                    </div>
+                                    <p class="reference-description">Python is a high-level, general-purpose programming
+                                        language. Its design philosophy emphasizes code readability with the use of
+                                        significant indentation. Used as the backend language for this project.</p>
+                                    <a href="https://docs.python.org/3.11/" target="_blank" rel="noopener noreferrer"
+                                        class="reference-link">
+                                        <i class="fas fa-external-link-alt"></i> https://docs.python.org/3.11/
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- Reference 5 -->
+                            <div class="reference-card animate-in" style="animation-delay: 0.5s;">
+                                <div class="reference-number">5</div>
+                                <div class="reference-content">
+                                    <div class="reference-title">
+                                        <i class="fas fa-bolt" style="color: #009688;"></i>
+                                        Sebastián Ramírez (2023). FastAPI – Modern, Fast Web Framework for Building APIs
+                                        with Python.
+                                    </div>
+                                    <p class="reference-description">FastAPI is a modern, fast (high-performance) web
+                                        framework for building APIs with Python based on standard Python type hints. It
+                                        provides automatic interactive API documentation and validation.</p>
+                                    <a href="https://fastapi.tiangolo.com/" target="_blank" rel="noopener noreferrer"
+                                        class="reference-link">
+                                        <i class="fas fa-external-link-alt"></i> https://fastapi.tiangolo.com/
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Citation Format Guide -->
+                    <div class="glass-panel animate-in" style="animation-delay: 0.6s;">
+                        <div class="glass-panel-header">
+                            <div class="glass-panel-title"><i class="fas fa-info-circle"></i> Citation Information</div>
+                        </div>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.8;">
+                            All references follow the <strong style="color: var(--text-primary);">APA 7th
+                                Edition</strong> citation format.
+                            These web resources were accessed and verified as of <strong
+                                style="color: var(--text-primary);">2024</strong>.
+                            URLs are provided for direct access to the official documentation of each technology used in
+                            this project.
+                        </p>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}?v={{ range(10001, 20000) | random }}"></script>
+</body>
+
+</html>

@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up | NutriGen AI</title>
+    <meta name="description" content="Join NutriGen AI - Your personal AI-powered nutrition and recipe assistant">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #020617 0%, #0a1628 30%, #111d3a 60%, #0c1a35 100%);
+            color: #f1f5f9;
+            overflow-x: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+        }
+
+        /* ── Animated Background Glow ── */
+        .bg-glow {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .bg-glow::before {
+            content: '';
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            top: -10%;
+            left: -10%;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, transparent 70%);
+            animation: glowDrift1 20s ease-in-out infinite alternate;
+        }
+
+        .bg-glow::after {
+            content: '';
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            bottom: -10%;
+            right: -10%;
+            background: radial-gradient(circle, rgba(236, 72, 153, 0.12) 0%, transparent 70%);
+            animation: glowDrift2 18s ease-in-out infinite alternate;
+        }
+
+        @keyframes glowDrift1 {
+            0% {
+                transform: translate(0, 0)
+            }
+
+            100% {
+                transform: translate(80px, 60px)
+            }
+        }
+
+        @keyframes glowDrift2 {
+            0% {
+                transform: translate(0, 0)
+            }
+
+            100% {
+                transform: translate(-60px, -80px)
+            }
+        }
+
+        /* ── Floating Particles ── */
+        .particles {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(139, 92, 246, 0.25);
+            animation: particleFloat linear infinite;
+        }
+
+        @keyframes particleFloat {
+            0% {
+                transform: translateY(100vh) scale(0);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            90% {
+                opacity: 0.6;
+            }
+
+            100% {
+                transform: translateY(-10vh) scale(1);
+                opacity: 0;
+            }
+        }
+
+        /* ── Floating Food Elements ── */
+        .food-elements {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .food-item {
+            position: absolute;
+            font-size: 2.5rem;
+            opacity: 0.18;
+            animation: foodFloat linear infinite;
+            filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.2));
+        }
+
+        @keyframes foodFloat {
+            0% {
+                transform: translateY(110vh) rotate(0deg) scale(0.7);
+                opacity: 0;
+            }
+
+            5% {
+                opacity: 0.18;
+            }
+
+            95% {
+                opacity: 0.12;
+            }
+
+            100% {
+                transform: translateY(-10vh) rotate(360deg) scale(1);
+                opacity: 0;
+            }
+        }
+
+        /* ── Main Container ── */
+        .signup-wrapper {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 520px;
+            animation: pageLoad 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        @keyframes pageLoad {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ── Glassmorphism Card ── */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(24px) saturate(180%);
+            -webkit-backdrop-filter: blur(24px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 2.5rem 2rem;
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.4), 0 0 40px rgba(139, 92, 246, 0.06);
+            transition: box-shadow 0.4s ease;
+        }
+
+        .glass-card:hover {
+            box-shadow: 0 30px 90px rgba(0, 0, 0, 0.5), 0 0 60px rgba(139, 92, 246, 0.1);
+        }
+
+        /* ── Header ── */
+        .auth-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .ai-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(236, 72, 153, 0.15));
+            border: 1px solid rgba(139, 92, 246, 0.25);
+            border-radius: 50px;
+            padding: 6px 16px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #a78bfa;
+            margin-bottom: 1rem;
+            letter-spacing: 0.05em;
+        }
+
+        .ai-badge i {
+            font-size: 0.85rem;
+        }
+
+        .auth-header h2 {
+            font-size: 1.85rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #c084fc, #f472b6, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.4rem;
+        }
+
+        .auth-header p {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            font-weight: 300;
+        }
+
+        /* ── Form Groups ── */
+        .form-group {
+            margin-bottom: 1.25rem;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #cbd5e1;
+            margin-bottom: 6px;
+            letter-spacing: 0.02em;
+        }
+
+        .input-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1.5px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .input-wrap:focus-within {
+            border-color: rgba(139, 92, 246, 0.5);
+            box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1), 0 0 20px rgba(139, 92, 246, 0.05);
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .input-wrap.valid {
+            border-color: rgba(16, 185, 129, 0.5);
+        }
+
+        .input-wrap.valid:focus-within {
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+        }
+
+        .input-wrap.invalid {
+            border-color: rgba(239, 68, 68, 0.5);
+        }
+
+        .input-wrap.invalid:focus-within {
+            box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
+        }
+
+        .input-wrap i.field-icon {
+            padding-left: 14px;
+            color: #64748b;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+            transition: color 0.3s;
+        }
+
+        .input-wrap:focus-within i.field-icon {
+            color: #a78bfa;
+        }
+
+        .input-wrap.valid i.field-icon {
+            color: #10b981;
+        }
+
+        .input-wrap.invalid i.field-icon {
+            color: #ef4444;
+        }
+
+        .input-wrap input,
+        .input-wrap select {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            padding: 13px 14px;
+            color: #f1f5f9;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.92rem;
+        }
+
+        .input-wrap input::placeholder {
+            color: #475569;
+        }
+
+        .input-wrap select {
+            cursor: pointer;
+        }
+
+        .input-wrap select option {
+            background: #1e293b;
+            color: #f1f5f9;
+        }
+
+        .status-icon {
+            padding-right: 14px;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+            animation: statusPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes statusPop {
+            0% {
+                transform: scale(0)
+            }
+
+            100% {
+                transform: scale(1)
+            }
+        }
+
+        .status-icon.valid {
+            color: #10b981;
+        }
+
+        .status-icon.invalid {
+            color: #ef4444;
+        }
+
+        .error-msg {
+            font-size: 0.75rem;
+            color: #f87171;
+            margin-top: 4px;
+            padding-left: 4px;
+            display: none;
+            animation: slideDown 0.2s ease;
+        }
+
+        .error-msg.show {
+            display: block;
+        }
+
+        @keyframes slideDown {
+            0% {
+                opacity: 0;
+                transform: translateY(-4px)
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        /* ── Country Code ── */
+        .country-select {
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #cbd5e1;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.88rem;
+            padding: 13px 4px 13px 14px;
+            cursor: pointer;
+            min-width: 80px;
+            border-right: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .country-select option {
+            background: #1e293b;
+            color: #f1f5f9;
+        }
+
+        /* ── Password Strength ── */
+        .password-strength {
+            margin-top: 8px;
+        }
+
+        .strength-bar {
+            height: 4px;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 6px;
+        }
+
+        .strength-fill {
+            height: 100%;
+            border-radius: 4px;
+            width: 0%;
+            transition: width 0.4s ease, background 0.4s ease;
+        }
+
+        .strength-checks {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2px 12px;
+        }
+
+        .strength-check {
+            font-size: 0.7rem;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: color 0.3s;
+        }
+
+        .strength-check.met {
+            color: #10b981;
+        }
+
+        .strength-check i {
+            font-size: 0.6rem;
+            width: 12px;
+            text-align: center;
+        }
+
+        /* ── OTP Section ── */
+        .otp-section {
+            margin-top: 10px;
+            padding: 14px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            display: none;
+            animation: slideDown 0.3s ease;
+        }
+
+        .otp-section.show {
+            display: block;
+        }
+
+        .otp-row {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin: 12px 0;
+        }
+
+        .otp-digit {
+            width: 44px;
+            height: 52px;
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: 700;
+            font-family: 'Outfit', sans-serif;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1.5px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: #f1f5f9;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .otp-digit:focus {
+            border-color: rgba(139, 92, 246, 0.6);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .otp-timer {
+            text-align: center;
+            font-size: 0.8rem;
+            color: #94a3b8;
+            margin-top: 6px;
+        }
+
+        .otp-timer span {
+            color: #a78bfa;
+            font-weight: 600;
+        }
+
+        .resend-btn {
+            background: none;
+            border: none;
+            color: #a78bfa;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: none;
+            margin: 6px auto;
+            font-family: 'Outfit', sans-serif;
+            transition: color 0.3s;
+        }
+
+        .resend-btn:hover {
+            color: #c084fc;
+        }
+
+        .verify-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 18px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, #8b5cf6, #a855f7);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: 'Outfit', sans-serif;
+            transition: all 0.3s;
+            margin-top: 6px;
+        }
+
+        .verify-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+        }
+
+        .verify-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .verify-btn .spinner {
+            display: none;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg)
+            }
+        }
+
+        .verified-badge {
+            display: none;
+            align-items: center;
+            gap: 6px;
+            color: #10b981;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        .verified-badge.show {
+            display: inline-flex;
+        }
+
+        .verified-badge i {
+            animation: checkPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes checkPop {
+            0% {
+                transform: scale(0) rotate(-45deg)
+            }
+
+            100% {
+                transform: scale(1) rotate(0)
+            }
+        }
+
+        /* ── Success Checkmark (SVG animated) ── */
+        .success-checkmark {
+            width: 28px;
+            height: 28px;
+            display: none;
+        }
+
+        .success-checkmark.show {
+            display: inline-block;
+        }
+
+        .success-checkmark .checkmark-circle {
+            stroke: #10b981;
+            stroke-dasharray: 166;
+            stroke-dashoffset: 166;
+            animation: strokeDraw 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+        }
+
+        .success-checkmark .checkmark-check {
+            stroke: #10b981;
+            stroke-dasharray: 48;
+            stroke-dashoffset: 48;
+            animation: strokeDraw 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.4s forwards;
+        }
+
+        @keyframes strokeDraw {
+            to {
+                stroke-dashoffset: 0
+            }
+        }
+
+        /* ── Primary Button ── */
+        .btn-create {
+            width: 100%;
+            padding: 15px;
+            margin-top: 1.5rem;
+            font-size: 1rem;
+            font-weight: 700;
+            font-family: 'Outfit', sans-serif;
+            border: none;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #8b5cf6, #a855f7, #ec4899);
+            background-size: 200% 200%;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            animation: gradientShift 4s ease infinite;
+        }
+
+        @keyframes gradientShift {
+
+            0%,
+            100% {
+                background-position: 0% 50%
+            }
+
+            50% {
+                background-position: 100% 50%
+            }
+        }
+
+        .btn-create:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(139, 92, 246, 0.4), 0 0 40px rgba(139, 92, 246, 0.15);
+        }
+
+        .btn-create:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .btn-create:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-create::after {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #8b5cf6, #ec4899, #8b5cf6);
+            z-index: -1;
+            filter: blur(15px);
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+
+        .btn-create:hover:not(:disabled)::after {
+            opacity: 0.5;
+        }
+
+        /* ── Footer Link ── */
+        .auth-footer {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.88rem;
+            color: #94a3b8;
+        }
+
+        .auth-footer a {
+            color: #a78bfa;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            border-bottom: 2px solid transparent;
+        }
+
+        .auth-footer a:hover {
+            color: #c084fc;
+            border-bottom-color: #c084fc;
+        }
+
+        /* ── Responsive ── */
+        @media(max-width:600px) {
+            body {
+                padding: 1rem 0.75rem;
+            }
+
+            .glass-card {
+                padding: 2rem 1.25rem;
+                border-radius: 20px;
+            }
+
+            .auth-header h2 {
+                font-size: 1.5rem;
+            }
+
+            .otp-digit {
+                width: 38px;
+                height: 46px;
+                font-size: 1.1rem;
+            }
+
+            .strength-checks {
+                grid-template-columns: 1fr;
+            }
+
+            .food-item {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Animated Glow Background -->
+    <div class="bg-glow"></div>
+
+    <!-- Floating Particles -->
+    <div class="particles" id="particles"></div>
+
+    <!-- Floating Food Elements -->
+    <div class="food-elements" id="foodElements"></div>
+
+    <!-- Signup Card -->
+    <div class="signup-wrapper">
+        <div class="glass-card">
+            <div class="auth-header">
+                <div class="ai-badge"><i class="fas fa-brain"></i> AI-Powered Nutrition</div>
+                <h2>Join NutriGen AI</h2>
+                <p>Start your personalized health journey</p>
+            </div>
+
+            <form id="signupForm" onsubmit="handleSignup(event)" novalidate>
+                <!-- Full Name -->
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <div class="input-wrap" id="nameWrap">
+                        <i class="fas fa-user field-icon"></i>
+                        <input type="text" id="fullName" placeholder="Enter your full name" autocomplete="name">
+                        <span class="status-icon" id="nameStatus"></span>
+                    </div>
+                    <div class="error-msg" id="nameError"></div>
+                </div>
+
+                <!-- Email -->
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <div class="input-wrap" id="emailWrap">
+                        <i class="fas fa-envelope field-icon"></i>
+                        <input type="email" id="emailInput" placeholder="you@example.com" autocomplete="email">
+                        <span class="status-icon" id="emailStatus"></span>
+                    </div>
+                    <div class="error-msg" id="emailError"></div>
+                    <button type="button" class="verify-btn" id="emailVerifyBtn" onclick="sendEmailOTP()"
+                        style="display:none">
+                        <i class="fas fa-paper-plane"></i> Verify Email
+                        <i class="fas fa-circle-notch spinner" id="emailSpinner"></i>
+                    </button>
+                    <div class="verified-badge" id="emailVerified">
+                        <svg class="success-checkmark show" viewBox="0 0 52 52">
+                            <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none" stroke-width="2" />
+                            <path class="checkmark-check" fill="none" d="M14 27l7 7 16-16" stroke-width="3" />
+                        </svg>
+                        Email Verified!
+                    </div>
+                    <div class="otp-section" id="emailOtpSection">
+                        <div style="text-align:center;font-size:0.85rem;color:#cbd5e1;margin-bottom:4px">Enter the
+                            6-digit code</div>
+                        <div class="otp-row" id="emailOtpRow"></div>
+                        <div class="otp-timer" id="emailTimer">Resend in <span id="emailCountdown">60</span>s</div>
+                        <button type="button" class="resend-btn" id="emailResend" onclick="sendEmailOTP()">Resend
+                            OTP</button>
+                    </div>
+                </div>
+
+                <!-- Mobile -->
+                <div class="form-group">
+                    <label>Mobile Number</label>
+                    <div class="input-wrap" id="mobileWrap">
+                        <select class="country-select" id="countryCode">
+                            <option value="+91" data-len="10">🇮🇳 +91</option>
+                            <option value="+1" data-len="10">🇺🇸 +1</option>
+                            <option value="+44" data-len="10">🇬🇧 +44</option>
+                            <option value="+61" data-len="9">🇦🇺 +61</option>
+                            <option value="+81" data-len="10">🇯🇵 +81</option>
+                            <option value="+49" data-len="11">🇩🇪 +49</option>
+                            <option value="+33" data-len="9">🇫🇷 +33</option>
+                            <option value="+971" data-len="9">🇦🇪 +971</option>
+                            <option value="+86" data-len="11">🇨🇳 +86</option>
+                            <option value="+55" data-len="11">🇧🇷 +55</option>
+                        </select>
+                        <input type="tel" id="mobileInput" placeholder="Mobile number" autocomplete="tel">
+                        <span class="status-icon" id="mobileStatus"></span>
+                    </div>
+                    <div class="error-msg" id="mobileError"></div>
+                    <button type="button" class="verify-btn" id="mobileVerifyBtn" onclick="sendMobileOTP()"
+                        style="display:none">
+                        <i class="fas fa-sms"></i> Send OTP
+                        <i class="fas fa-circle-notch spinner" id="mobileSpinner"></i>
+                    </button>
+                    <div class="verified-badge" id="mobileVerified">
+                        <svg class="success-checkmark show" viewBox="0 0 52 52">
+                            <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none" stroke-width="2" />
+                            <path class="checkmark-check" fill="none" d="M14 27l7 7 16-16" stroke-width="3" />
+                        </svg>
+                        Mobile Verified!
+                    </div>
+                    <div class="otp-section" id="mobileOtpSection">
+                        <div style="text-align:center;font-size:0.85rem;color:#cbd5e1;margin-bottom:4px">Enter the
+                            6-digit code</div>
+                        <div class="otp-row" id="mobileOtpRow"></div>
+                        <div class="otp-timer" id="mobileTimer">Resend in <span id="mobileCountdown">60</span>s</div>
+                        <button type="button" class="resend-btn" id="mobileResend" onclick="sendMobileOTP()">Resend
+                            OTP</button>
+                    </div>
+                </div>
+
+                <!-- Password -->
+                <div class="form-group">
+                    <label>Password</label>
+                    <div class="input-wrap" id="passwordWrap">
+                        <i class="fas fa-lock field-icon"></i>
+                        <input type="password" id="passwordInput" placeholder="Create a strong password"
+                            autocomplete="new-password">
+                        <i class="fas fa-eye" id="togglePw"
+                            style="padding-right:14px;color:#64748b;cursor:pointer;font-size:0.85rem"
+                            onclick="togglePassword('passwordInput','togglePw')"></i>
+                    </div>
+                    <div class="password-strength" id="pwStrength">
+                        <div class="strength-bar">
+                            <div class="strength-fill" id="strengthFill"></div>
+                        </div>
+                        <div class="strength-checks">
+                            <span class="strength-check" id="chkLen"><i class="fas fa-circle"></i> 8+ characters</span>
+                            <span class="strength-check" id="chkUpper"><i class="fas fa-circle"></i> Uppercase</span>
+                            <span class="strength-check" id="chkLower"><i class="fas fa-circle"></i> Lowercase</span>
+                            <span class="strength-check" id="chkNum"><i class="fas fa-circle"></i> Number</span>
+                            <span class="strength-check" id="chkSpecial"><i class="fas fa-circle"></i> Special
+                                char</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Confirm Password -->
+                <div class="form-group">
+                    <label>Confirm Password</label>
+                    <div class="input-wrap" id="confirmWrap">
+                        <i class="fas fa-shield-halved field-icon"></i>
+                        <input type="password" id="confirmInput" placeholder="Re-enter your password"
+                            autocomplete="new-password">
+                        <i class="fas fa-eye" id="toggleCpw"
+                            style="padding-right:14px;color:#64748b;cursor:pointer;font-size:0.85rem"
+                            onclick="togglePassword('confirmInput','toggleCpw')"></i>
+                        <span class="status-icon" id="confirmStatus"></span>
+                    </div>
+                    <div class="error-msg" id="confirmError"></div>
+                </div>
+
+                <button type="submit" class="btn-create" id="createBtn" disabled>
+                    <i class="fas fa-user-plus" style="margin-right:8px"></i> Create Account
+                </button>
+            </form>
+
+            <div class="auth-footer">
+                Already have an account? <a href="/">Login</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ── Background Animations ──
+        (function initParticles() {
+            const c = document.getElementById('particles');
+            for (let i = 0; i < 20; i++) {
+                const p = document.createElement('span');
+                p.className = 'particle';
+                const s = Math.random() * 4 + 2;
+                p.style.cssText = `width:${s}px;height:${s}px;left:${Math.random() * 100}%;animation-duration:${Math.random() * 15 + 10}s;animation-delay:${Math.random() * 10}s;opacity:${Math.random() * 0.4 + 0.1}`;
+                c.appendChild(p);
+            }
+        })();
+        (function initFood() {
+            const foods = ['🥑', '🥦', '🫐', '🥗', '🍓', '🥜', '🍊', '🥝', '🍇', '🥕', '🍋', '🥥'];
+            const c = document.getElementById('foodElements');
+            for (let i = 0; i < 10; i++) {
+                const f = document.createElement('span');
+                f.className = 'food-item';
+                f.textContent = foods[i % foods.length];
+                f.style.cssText = `left:${Math.random() * 95}%;animation-duration:${Math.random() * 25 + 20}s;animation-delay:${Math.random() * 15}s;font-size:${Math.random() * 1.5 + 1.5}rem`;
+                c.appendChild(f);
+            }
+        })();
+
+        // ── State ──
+        let emailVerifiedState = false, mobileVerifiedState = false;
+        let emailTimerInterval = null, mobileTimerInterval = null;
+
+        // ── Validation Helpers ──
+        function setValid(wrapId, statusId) {
+            document.getElementById(wrapId).className = 'input-wrap valid';
+            const s = document.getElementById(statusId);
+            s.className = 'status-icon valid'; s.innerHTML = '<i class="fas fa-check-circle"></i>';
+        }
+        function setInvalid(wrapId, statusId, errorId, msg) {
+            document.getElementById(wrapId).className = 'input-wrap invalid';
+            const s = document.getElementById(statusId);
+            s.className = 'status-icon invalid'; s.innerHTML = '<i class="fas fa-exclamation-circle"></i>';
+            const e = document.getElementById(errorId);
+            e.textContent = msg; e.className = 'error-msg show';
+        }
+        function clearState(wrapId, statusId, errorId) {
+            document.getElementById(wrapId).className = 'input-wrap';
+            document.getElementById(statusId).className = 'status-icon';
+            document.getElementById(statusId).innerHTML = '';
+            const e = document.getElementById(errorId);
+            e.className = 'error-msg'; e.textContent = '';
+        }
+
+        // ── Full Name Validation ──
+        document.getElementById('fullName').addEventListener('input', function () {
+            const v = this.value.trim();
+            if (!v) { clearState('nameWrap', 'nameStatus', 'nameError'); return; }
+            if (v.length < 3) setInvalid('nameWrap', 'nameStatus', 'nameError', 'Minimum 3 characters required');
+            else if (!/^[a-zA-Z\s]+$/.test(v)) setInvalid('nameWrap', 'nameStatus', 'nameError', 'Letters only');
+            else { setValid('nameWrap', 'nameStatus'); document.getElementById('nameError').className = 'error-msg'; }
+            checkFormReady();
+        });
+
+        // ── Email Validation ──
+        document.getElementById('emailInput').addEventListener('input', function () {
+            const v = this.value.trim();
+            if (!v) { clearState('emailWrap', 'emailStatus', 'emailError'); document.getElementById('emailVerifyBtn').style.display = 'none'; return; }
+            const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+            if (!valid) {
+                setInvalid('emailWrap', 'emailStatus', 'emailError', 'Enter a valid email');
+                document.getElementById('emailVerifyBtn').style.display = 'none';
+            } else {
+                setValid('emailWrap', 'emailStatus');
+                document.getElementById('emailError').className = 'error-msg';
+                if (!emailVerifiedState) document.getElementById('emailVerifyBtn').style.display = 'inline-flex';
+            }
+            checkFormReady();
+        });
+
+        // ── Mobile Validation ──
+        document.getElementById('mobileInput').addEventListener('input', function () {
+            this.value = this.value.replace(/\D/g, '');
+            const v = this.value;
+            const expected = parseInt(document.getElementById('countryCode').selectedOptions[0].dataset.len);
+            if (!v) { clearState('mobileWrap', 'mobileStatus', 'mobileError'); document.getElementById('mobileVerifyBtn').style.display = 'none'; return; }
+            if (v.length !== expected) {
+                setInvalid('mobileWrap', 'mobileStatus', 'mobileError', `Must be ${expected} digits`);
+                document.getElementById('mobileVerifyBtn').style.display = 'none';
+            } else {
+                setValid('mobileWrap', 'mobileStatus');
+                document.getElementById('mobileError').className = 'error-msg';
+                if (!mobileVerifiedState) document.getElementById('mobileVerifyBtn').style.display = 'inline-flex';
+            }
+            checkFormReady();
+        });
+        document.getElementById('countryCode').addEventListener('change', () => {
+            document.getElementById('mobileInput').dispatchEvent(new Event('input'));
+        });
+
+        // ── Password Validation ──
+        document.getElementById('passwordInput').addEventListener('input', function () {
+            const v = this.value;
+            const checks = { len: v.length >= 8, upper: /[A-Z]/.test(v), lower: /[a-z]/.test(v), num: /[0-9]/.test(v), special: /[^a-zA-Z0-9]/.test(v) };
+            const ids = { len: 'chkLen', upper: 'chkUpper', lower: 'chkLower', num: 'chkNum', special: 'chkSpecial' };
+            let score = 0;
+            for (const k in checks) {
+                const el = document.getElementById(ids[k]);
+                if (checks[k]) { el.className = 'strength-check met'; el.querySelector('i').className = 'fas fa-check-circle'; score++; }
+                else { el.className = 'strength-check'; el.querySelector('i').className = 'fas fa-circle'; }
+            }
+            const fill = document.getElementById('strengthFill');
+            const pct = (score / 5) * 100;
+            fill.style.width = pct + '%';
+            if (score <= 2) fill.style.background = '#ef4444';
+            else if (score <= 3) fill.style.background = '#f59e0b';
+            else if (score <= 4) fill.style.background = '#3b82f6';
+            else fill.style.background = '#10b981';
+
+            document.getElementById('confirmInput').dispatchEvent(new Event('input'));
+            checkFormReady();
+        });
+
+        // ── Confirm Password ──
+        document.getElementById('confirmInput').addEventListener('input', function () {
+            const pw = document.getElementById('passwordInput').value;
+            const v = this.value;
+            if (!v) { clearState('confirmWrap', 'confirmStatus', 'confirmError'); return; }
+            if (v !== pw) setInvalid('confirmWrap', 'confirmStatus', 'confirmError', 'Passwords do not match');
+            else { setValid('confirmWrap', 'confirmStatus'); document.getElementById('confirmError').className = 'error-msg'; }
+            checkFormReady();
+        });
+
+        // ── Toggle Password Visibility ──
+        function togglePassword(inputId, iconId) {
+            const inp = document.getElementById(inputId);
+            const ico = document.getElementById(iconId);
+            if (inp.type === 'password') { inp.type = 'text'; ico.className = 'fas fa-eye-slash'; }
+            else { inp.type = 'password'; ico.className = 'fas fa-eye'; }
+        }
+
+        // ── OTP Helpers ──
+        function createOTPInputs(containerId, onComplete) {
+            const c = document.getElementById(containerId);
+            c.innerHTML = '';
+            for (let i = 0; i < 6; i++) {
+                const inp = document.createElement('input');
+                inp.type = 'text'; inp.maxLength = 1; inp.className = 'otp-digit';
+                inp.dataset.index = i;
+                inp.addEventListener('input', function () {
+                    if (this.value.length === 1 && i < 5) c.children[i + 1].focus();
+                    const code = Array.from(c.children).map(x => x.value).join('');
+                    if (code.length === 6) onComplete(code);
+                });
+                inp.addEventListener('keydown', function (e) {
+                    if (e.key === 'Backspace' && !this.value && i > 0) c.children[i - 1].focus();
+                });
+                inp.addEventListener('paste', function (e) {
+                    e.preventDefault();
+                    const text = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '').slice(0, 6);
+                    for (let j = 0; j < text.length && j < 6; j++) c.children[j].value = text[j];
+                    if (text.length === 6) onComplete(text);
+                });
+                c.appendChild(inp);
+            }
+            setTimeout(() => c.children[0].focus(), 100);
+        }
+
+        function startTimer(countdownId, timerId, resendId, seconds) {
+            let t = seconds;
+            document.getElementById(countdownId).textContent = t;
+            document.getElementById(timerId).style.display = 'block';
+            document.getElementById(resendId).style.display = 'none';
+            return setInterval(() => {
+                t--;
+                document.getElementById(countdownId).textContent = t;
+                if (t <= 0) {
+                    clearInterval(emailTimerInterval); clearInterval(mobileTimerInterval);
+                    document.getElementById(timerId).style.display = 'none';
+                    document.getElementById(resendId).style.display = 'block';
+                }
+            }, 1000);
+        }
+
+        // ── Send Email OTP ──
+        async function sendEmailOTP() {
+            const btn = document.getElementById('emailVerifyBtn');
+            const spinner = document.getElementById('emailSpinner');
+            spinner.style.display = 'inline-block'; btn.disabled = true;
+            try {
+                const res = await fetch('/api/send-email-otp', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: document.getElementById('emailInput').value.trim() })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    btn.style.display = 'none';
+                    document.getElementById('emailOtpSection').className = 'otp-section show';
+                    createOTPInputs('emailOtpRow', verifyEmailOTP);
+                    if (emailTimerInterval) clearInterval(emailTimerInterval);
+                    emailTimerInterval = startTimer('emailCountdown', 'emailTimer', 'emailResend', 60);
+                } else {
+                    setInvalid('emailWrap', 'emailStatus', 'emailError', data.error || 'Failed to send OTP');
+                }
+            } catch (e) {
+                setInvalid('emailWrap', 'emailStatus', 'emailError', 'Network error');
+            }
+            spinner.style.display = 'none'; btn.disabled = false;
+        }
+
+        async function verifyEmailOTP(code) {
+            try {
+                const res = await fetch('/api/verify-email-otp', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: document.getElementById('emailInput').value.trim(), otp: code })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    emailVerifiedState = true;
+                    document.getElementById('emailOtpSection').className = 'otp-section';
+                    document.getElementById('emailVerified').className = 'verified-badge show';
+                    document.getElementById('emailVerifyBtn').style.display = 'none';
+                    if (emailTimerInterval) clearInterval(emailTimerInterval);
+                    checkFormReady();
+                } else {
+                    const digits = document.querySelectorAll('#emailOtpRow .otp-digit');
+                    digits.forEach(d => { d.value = ''; d.style.borderColor = 'rgba(239,68,68,0.5)'; });
+                    digits[0].focus();
+                    setTimeout(() => digits.forEach(d => d.style.borderColor = ''), 800);
+                }
+            } catch (e) { }
+        }
+
+        // ── Send Mobile OTP ──
+        async function sendMobileOTP() {
+            const btn = document.getElementById('mobileVerifyBtn');
+            const spinner = document.getElementById('mobileSpinner');
+            spinner.style.display = 'inline-block'; btn.disabled = true;
+            try {
+                const res = await fetch('/api/send-mobile-otp', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ mobile: document.getElementById('countryCode').value + document.getElementById('mobileInput').value })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    btn.style.display = 'none';
+                    document.getElementById('mobileOtpSection').className = 'otp-section show';
+                    createOTPInputs('mobileOtpRow', verifyMobileOTP);
+                    if (mobileTimerInterval) clearInterval(mobileTimerInterval);
+                    mobileTimerInterval = startTimer('mobileCountdown', 'mobileTimer', 'mobileResend', 60);
+                } else {
+                    setInvalid('mobileWrap', 'mobileStatus', 'mobileError', data.error || 'Failed to send OTP');
+                }
+            } catch (e) {
+                setInvalid('mobileWrap', 'mobileStatus', 'mobileError', 'Network error');
+            }
+            spinner.style.display = 'none'; btn.disabled = false;
+        }
+
+        async function verifyMobileOTP(code) {
+            try {
+                const res = await fetch('/api/verify-mobile-otp', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ mobile: document.getElementById('countryCode').value + document.getElementById('mobileInput').value, otp: code })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    mobileVerifiedState = true;
+                    document.getElementById('mobileOtpSection').className = 'otp-section';
+                    document.getElementById('mobileVerified').className = 'verified-badge show';
+                    document.getElementById('mobileVerifyBtn').style.display = 'none';
+                    if (mobileTimerInterval) clearInterval(mobileTimerInterval);
+                    checkFormReady();
+                } else {
+                    const digits = document.querySelectorAll('#mobileOtpRow .otp-digit');
+                    digits.forEach(d => { d.value = ''; d.style.borderColor = 'rgba(239,68,68,0.5)'; });
+                    digits[0].focus();
+                    setTimeout(() => digits.forEach(d => d.style.borderColor = ''), 800);
+                }
+            } catch (e) { }
+        }
+
+        // ── Form Ready Check ──
+        function checkFormReady() {
+            const name = document.getElementById('fullName').value.trim();
+            const email = document.getElementById('emailInput').value.trim();
+            const mobile = document.getElementById('mobileInput').value;
+            const pw = document.getElementById('passwordInput').value;
+            const cpw = document.getElementById('confirmInput').value;
+
+            const nameOk = name.length >= 3 && /^[a-zA-Z\s]+$/.test(name);
+            const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+            const expected = parseInt(document.getElementById('countryCode').selectedOptions[0].dataset.len);
+            const mobileOk = mobile.length === expected;
+            const pwOk = pw.length >= 8 && /[A-Z]/.test(pw) && /[a-z]/.test(pw) && /[0-9]/.test(pw) && /[^a-zA-Z0-9]/.test(pw);
+            const cpwOk = cpw === pw && cpw.length > 0;
+
+            document.getElementById('createBtn').disabled = !(nameOk && emailOk && mobileOk && pwOk && cpwOk && emailVerifiedState && mobileVerifiedState);
+        }
+
+        // ── Submit ──
+        async function handleSignup(e) {
+            e.preventDefault();
+            const btn = document.getElementById('createBtn');
+            const orig = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Creating Account...';
+            btn.disabled = true;
+            try {
+                const res = await fetch('/api/signup', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: document.getElementById('fullName').value.trim(),
+                        email: document.getElementById('emailInput').value.trim(),
+                        mobile: document.getElementById('countryCode').value + document.getElementById('mobileInput').value,
+                        password: document.getElementById('passwordInput').value
+                    })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    btn.innerHTML = '<i class="fas fa-check"></i> Welcome to NutriGen!';
+                    btn.style.background = 'linear-gradient(135deg,#10b981,#34d399)';
+                    setTimeout(() => window.location.href = "/dashboard", 1200);
+                } else throw new Error(data.error);
+            } catch (err) {
+                btn.innerHTML = orig; btn.disabled = false;
+                setInvalid('emailWrap', 'emailStatus', 'emailError', err.message);
+            }
+        }
+    </script>
+</body>
+
+</html>
