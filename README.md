@@ -58,14 +58,10 @@ http://localhost:5000
 - **Application Server**: Python FastAPI with Uvicorn
 - **Frontend**: React 18, TypeScript, Vite, Tailwind CSS, Radix UI, Framer Motion, Recharts, Lucide Icons
 - **Backend Development**: Python (3.8+), FastAPI, Pydantic
-- **Database**: Firebase Firestore (NoSQL)
-- **Authentication**: Firebase Authentication (Google OAuth, Email/Password)
-- **Payment Gateway**: Razorpay
+- **Database**: DB Browser(SQLite)
 - **Real-Time Communication**: WebSocket
-- **PDF Generation**: ReportLab, QRCode
 - **Email Notifications**: SMTP
 - **Security**: Google reCAPTCHA v2, PyCryptodome, python-jose, passlib
-- **Deployment**: Google Cloud Run, Firebase Hosting
 - **Load Testing**: Locust
 - **Version Control**: Git
 - **AI**: Google Gemini API
@@ -87,3 +83,17 @@ healthy-recipe-generator/
 ## License
 
 MIT License
+
+## Screenshots
+<img width="1920" height="1080" alt="Screenshot 2026-03-02 223043" src="https://github.com/user-attachments/assets/a676f071-0bdc-483d-9a79-f0fe5c00775f" />
+<img width="1920" height="1080" alt="Screenshot 2026-03-02 223020" src="https://github.com/user-attachments/assets/6ca0517b-ae08-437b-9541-5ef71020ebbb" />
+<img width="1920" height="1080" alt="Screenshot 2026-03-02 221604" src="https://github.com/user-attachments/assets/6026ac69-4874-45e1-a7a9-81ea7461d53e" />
+<img width="1920" height="1080" alt="Screenshot 2026-03-02 221309" src="https://github.com/user-attachments/assets/736e2fbe-e514-4002-9f6f-618c1fa44b8c" />
+<img width="1920" height="1080" alt="Screenshot 2026-03-02 220520" src="https://github.com/user-attachments/assets/a86f0cad-b49a-43f8-842e-80e487891067" />
+<img width="1920" height="1080" alt="Screenshot 2026-03-02 220349" src="https://github.com/user-attachments/assets/2cd8940f-936f-44f5-b312-a9fb04c7b7e5" />
+<img width="1920" height="1080" alt="Screenshot 2026-03-31 121305" src="https://github.com/user-attachments/assets/dc876ebf-31ba-4e5e-9e94-34335106b35a" />
+
+
+## How to Run 
+.\venv\Scripts\Activate.ps1
+Python app.py 
