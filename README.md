@@ -96,6 +96,7 @@ MIT License
 <img width="1920" height="1080" alt="Screenshot 2026-03-31 121305" src="https://github.com/user-attachments/assets/dc876ebf-31ba-4e5e-9e94-34335106b35a" />
 
 
+
 ## How to Run 
 .\venv\Scripts\Activate.ps1
 Python app.py 
